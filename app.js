@@ -13,9 +13,11 @@ dotenv.config({ path: "./config/config.env" });
 
 app.use(
   cors({
-    origin: [process.env.FRONTEND_URL],
+    origin: process.env.FRONTEND_URL,
     methods: ["GET", "PUT", "DELETE", "POST"],
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
+    optionsSuccessStatus: 200, // for older browsers
   })
 );
 
@@ -29,6 +31,18 @@ app.use(
     tempFileDir: "/tmp/",
   })
 );
+
+// Test CORS route
+app.get("/test-cors", (req, res) => {
+  res.header("Access-Control-Allow-Origin", process.env.FRONTEND_URL);
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.send("CORS headers set!");
+});
 
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/blog", blogRouter);
